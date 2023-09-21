@@ -12,8 +12,8 @@ import xyz.blushyes.common.R;
 public class ErrorControllerAdvice {
     @ExceptionHandler(BaseException.class)
     @ResponseBody
-    public R<String> baseException(Exception e) {
-        return R.fail(e.getMessage());
+    public R<String> baseException(BaseException e) {
+        return R.fail(e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
