@@ -1,8 +1,7 @@
 package xyz.blushyes.common;
 
 import cn.hutool.http.HttpStatus;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,13 +13,12 @@ import java.util.List;
  * 分页响应结果基类
  */
 @Data
-@ApiModel
 @EqualsAndHashCode(callSuper = true)
 public class RP<T> extends PageVO<T> implements Serializable {
-    @ApiModelProperty(value = "响应码")
+    @Schema(name = "响应码")
     private Integer code;
 
-    @ApiModelProperty(value = "响应消息")
+    @Schema(name = "响应消息")
     private String msg;
 
     private RP() {

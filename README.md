@@ -1,2 +1,2 @@
-# QuickJ
-自用快速构建脚手架。
+# Quick Spring
+Spring自用快速构建脚手架。
