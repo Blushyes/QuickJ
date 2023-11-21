@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>xyz.blushyes</groupId>
-        <artifactId>QuickJ</artifactId>
+        <artifactId>quick-spring</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>quickj-common</artifactId>
+    <artifactId>common</artifactId>
 
     <dependencies>
         <!--slf4j-->

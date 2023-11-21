@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>xyz.blushyes</groupId>
-        <artifactId>QuickJ</artifactId>
+        <artifactId>quick-spring</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>quickj-core</artifactId>
+    <artifactId>core</artifactId>
 
     <dependencies>
         <!--druid连接池-->
@@ -71,15 +71,33 @@
         <!--common-->
         <dependency>
             <groupId>xyz.blushyes</groupId>
-            <artifactId>quickj-common</artifactId>
+            <artifactId>common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
         <!--pojo-->
         <dependency>
             <groupId>xyz.blushyes</groupId>
-            <artifactId>quickj-pojo</artifactId>
+            <artifactId>pojo</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <target>${java.version}</target>
+                    <source>${java.version}</source>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

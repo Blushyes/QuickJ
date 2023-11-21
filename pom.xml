@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>xyz.blushyes</groupId>
-    <artifactId>QuickJ</artifactId>
+    <artifactId>quick-spring</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -15,9 +15,9 @@
     </parent>
 
     <modules>
-        <module>quickj-common</module>
-        <module>quickj-pojo</module>
-        <module>quickj-core</module>
+        <module>common</module>
+        <module>pojo</module>
+        <module>core</module>
     </modules>
 
     <properties>
@@ -83,22 +83,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <target>${java.version}</target>
-                    <source>${java.version}</source>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
