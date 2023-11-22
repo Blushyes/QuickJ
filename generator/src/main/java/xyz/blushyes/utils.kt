@@ -5,9 +5,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.function.Consumer
 
-
-val SRC_PATH = pathOf(listOf(System.getProperty("user.dir"), "pojo", "src", "main", "java"))
-
 fun toCamelCase(input: String): String {
     return input.split('_')
         .joinToString("") { it.replaceFirstChar { char -> char.uppercase() } }
@@ -22,22 +19,34 @@ fun toSnakeCase(input: String): String {
     }.joinToString("")
 }
 
+fun getModuleJavaDirPath(module: String): String {
+    return pathOf(listOf(getModuleSrcPath(module), "main", "java"))
+}
+
+fun getModuleResourcesDirPath(module: String): String {
+    return pathOf(listOf(getModuleSrcPath(module), "main", "resources"))
+}
+
+fun getModuleSrcPath(module: String): String {
+    return pathOf(listOf(System.getProperty("user.dir"), module, "src"))
+}
+
 fun pathOf(list: List<String?>): String {
     val builder = StringBuilder()
     list.forEach(Consumer { name -> builder.append(name).append(File.separator) })
     return builder.toString()
 }
 
-fun transferPath(packageName: String): String {
-    return SRC_PATH + File.separatorChar + packageName.replace('.', File.separatorChar)
+fun transferPath(module: String, packageName: String): String {
+    return getModuleJavaDirPath(module) + File.separatorChar + packageName.replace('.', File.separatorChar)
 }
 
 fun join(path1: String, path2: String): String {
     return "${path1}${File.separatorChar}${path2}"
 }
 
-fun write(packageName: String, fullFileName: String, content: String) {
-    val outputPath = transferPath(packageName)
+fun write(module: String, packageName: String, fullFileName: String, content: String) {
+    val outputPath = transferPath(module, packageName)
     val directory = File(outputPath)
 
     if (!directory.exists() && !directory.mkdirs()) {
@@ -47,11 +56,11 @@ fun write(packageName: String, fullFileName: String, content: String) {
     Files.writeString(Paths.get(outputPath + File.separatorChar + fullFileName), content)
 }
 
-fun softWrite(packageName: String, fullFileName: String, content: String) {
-    val outputPath = transferPath(packageName)
-    if (Files.exists(Paths.get(outputPath))) {
+fun softWrite(module: String, packageName: String, fullFileName: String, content: String) {
+    val outputPath = transferPath(module, packageName)
+    if (Files.exists(Paths.get(outputPath + fullFileName))) {
         println("文件已存在")
         return
     }
-    write(packageName, fullFileName, content)
+    write(module, packageName, fullFileName, content)
 }

@@ -1,0 +1,11 @@
+package $mapperPackage;
+
+#set($poClassName = $ConvertUtils.toCamelCase($tableName))
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
+import $poPackage.$poClassName;
+
+@Mapper
+public interface ${poClassName}Mapper extends BaseMapper<$poClassName> {
+
+}

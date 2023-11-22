@@ -1,0 +1,9 @@
+package $servicePackage;
+
+#set($poClassName = $ConvertUtils.toCamelCase($tableName))
+import com.baomidou.mybatisplus.extension.service.IService;
+import $poPackage.$poClassName;
+
+public interface ${poClassName}Service extends IService<$poClassName> {
+
+}

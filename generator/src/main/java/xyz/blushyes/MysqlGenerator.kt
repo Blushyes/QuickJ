@@ -9,13 +9,43 @@ import xyz.blushyes.common.TimePO
 import java.io.StringWriter
 import java.sql.DriverManager
 
-class MysqlGenerator(
-    private val host: String,
-    private val port: Number,
-    private val db: String,
-    private val username: String,
+// TODO 硬编码，后续再重构
+class MysqlGenerator : Generator {
+    private val host: String
+    private val port: Number
+    private val db: String
+    private val username: String
     private val password: String
-) : Generator {
+    private val url: String
+
+    constructor() {
+        val config = MavenPropertiesMysqlConfigParser().parse()
+        this.host = config.host
+        this.port = config.port
+        this.db = config.db
+        this.username = config.username
+        this.password = config.password
+        this.url = "jdbc:mysql://$host:$port/$db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai"
+    }
+
+    constructor(host: String, port: Number, db: String, username: String, password: String) {
+        this.host = host
+        this.port = port
+        this.db = db
+        this.username = username
+        this.password = password
+        this.url = "jdbc:mysql://$host:$port/$db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai"
+    }
+
+    constructor(url: String, username: String, password: String) {
+        this.host = ""
+        this.port = 0
+        this.db = ""
+        this.username = username
+        this.password = password
+        this.url = url
+    }
+
 
     private val engine = VelocityEngine().apply {
         setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath")
@@ -49,7 +79,6 @@ class MysqlGenerator(
 
 
     override fun execute(basePackage: String) {
-        val url = "jdbc:mysql://$host:$port/$db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai"
         getTableSchemas(url, username, password, db).forEach {
             val context = VelocityContext().apply {
                 put("ConvertUtils", ConvertUtils())
@@ -57,6 +86,9 @@ class MysqlGenerator(
                 put("tableComment", it.comment)
                 put("columns", it.columns)
                 put("poPackage", "xyz.blushyes.po")
+                put("mapperPackage", "xyz.blushyes.mapper")
+                put("servicePackage", "xyz.blushyes.service")
+                put("serviceImplPackage", "xyz.blushyes.service.impl")
                 val resetColumnByFields = fun(fields: Set<String>) {
                     put("columns", it.columns.filter { col -> !fields.contains(toSnakeCase(col.name)) })
                 }
@@ -81,10 +113,30 @@ class MysqlGenerator(
                 }
             }
             val poTemplate = engine.getTemplate("templates/po.vm", "utf-8")
-            val writer = StringWriter()
-            poTemplate.merge(context, writer)
-            println(writer)
-            write("$basePackage.po", toCamelCase(it.name) + ".java", writer.toString())
+            val mapperTemplate = engine.getTemplate("templates/mapper.vm", "utf-8")
+            val serviceTemplate = engine.getTemplate("templates/service.vm", "utf-8")
+            val serviceImplTemplate = engine.getTemplate("templates/service-impl.vm", "utf-8")
+            val poWriter = StringWriter()
+            val mapperWriter = StringWriter()
+            val serviceWriter = StringWriter()
+            val serviceImplWriter = StringWriter()
+            poTemplate.merge(context, poWriter)
+            mapperTemplate.merge(context, mapperWriter)
+            serviceTemplate.merge(context, serviceWriter)
+            serviceImplTemplate.merge(context, serviceImplWriter)
+            println(poWriter)
+            println(mapperWriter)
+            println(serviceWriter)
+            println(serviceImplWriter)
+            softWrite("pojo", "$basePackage.po", toCamelCase(it.name) + ".java", poWriter.toString())
+            softWrite("core", "$basePackage.mapper", toCamelCase(it.name + "Mapper") + ".java", mapperWriter.toString())
+            softWrite("core", "$basePackage.service", toCamelCase(it.name + "Service") + ".java", serviceWriter.toString())
+            softWrite(
+                "core",
+                "$basePackage.service.impl",
+                toCamelCase(it.name + "ServiceImpl") + ".java",
+                serviceImplWriter.toString()
+            )
         }
     }
 

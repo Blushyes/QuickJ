@@ -1,0 +1,13 @@
+package $serviceImplPackage;
+
+#set($poClassName = $ConvertUtils.toCamelCase($tableName))
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
+import $mapperPackage.${poClassName}Mapper;
+import $poPackage.$poClassName;
+import $servicePackage.${poClassName}Service;
+
+@Service
+public class ${poClassName}ServiceImpl extends ServiceImpl<${poClassName}Mapper, ${poClassName}> implements ${poClassName}Service {
+
+}
