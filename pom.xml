@@ -19,6 +19,7 @@
         <module>pojo</module>
         <module>core</module>
         <module>generator</module>
+        <module>file</module>
     </modules>
 
     <properties>
