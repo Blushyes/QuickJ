@@ -7,11 +7,11 @@ import lombok.Data;
 
 @Data
 public class BasePO extends TimePO {
-    @Schema(name = "创建者openid")
+    @Schema(description = "创建者openid")
     @TableField(fill = FieldFill.INSERT)
-    private String createBy;
+    private String createdBy;
 
-    @Schema(name = "更新者openid")
+    @Schema(description = "更新者openid")
     @TableField(fill = FieldFill.UPDATE)
-    private String updateBy;
+    private String updatedBy;
 }

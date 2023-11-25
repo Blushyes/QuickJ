@@ -15,10 +15,8 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class RP<T> extends PageVO<T> implements Serializable {
-    @Schema(name = "响应码")
     private Integer code;
 
-    @Schema(name = "响应消息")
     private String msg;
 
     private RP() {

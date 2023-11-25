@@ -49,10 +49,7 @@ class MysqlGenerator : Generator {
 
     private val engine = VelocityEngine().apply {
         setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath")
-        setProperty(
-            "classpath.resource.loader.class",
-            "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader"
-        )
+        setProperty("classpath.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader")
         init()
     }
 
@@ -81,6 +78,9 @@ class MysqlGenerator : Generator {
     override fun execute(basePackage: String) {
         getTableSchemas(url, username, password, db).forEach {
             val context = VelocityContext().apply {
+                it.columns.forEach { info ->
+                    info.name = toCamelCase(info.name)
+                }
                 put("ConvertUtils", ConvertUtils())
                 put("tableName", it.name)
                 put("tableComment", it.comment)
@@ -93,7 +93,7 @@ class MysqlGenerator : Generator {
                     put("columns", it.columns.filter { col -> !fields.contains(toSnakeCase(col.name)) })
                 }
                 val extendWith = fun(fields: Set<String>): Boolean {
-                    return it.columns.map { col -> col.name }.intersect(fields).isNotEmpty()
+                    return it.columns.map { col -> toSnakeCase(col.name) }.intersect(fields).isNotEmpty()
                 }
                 if (extendWith(basePoFields)) {
                     put("hasExtend", true)
@@ -131,12 +131,7 @@ class MysqlGenerator : Generator {
             softWrite("pojo", "$basePackage.po", toCamelCase(it.name) + ".java", poWriter.toString())
             softWrite("core", "$basePackage.mapper", toCamelCase(it.name + "Mapper") + ".java", mapperWriter.toString())
             softWrite("core", "$basePackage.service", toCamelCase(it.name + "Service") + ".java", serviceWriter.toString())
-            softWrite(
-                "core",
-                "$basePackage.service.impl",
-                toCamelCase(it.name + "ServiceImpl") + ".java",
-                serviceImplWriter.toString()
-            )
+            softWrite("core", "$basePackage.service.impl", toCamelCase(it.name + "ServiceImpl") + ".java", serviceImplWriter.toString())
         }
     }
 

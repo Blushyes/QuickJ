@@ -2,7 +2,6 @@ package $poPackage;
 
 import lombok.Data;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
 #if($hasExtend)
 import $extendClass;
 #end
@@ -12,10 +11,10 @@ import $extendClass;
  *
  */
 @Data
-@Tag(name = "$tableComment")
+@Schema(description = "$tableComment")
 public class $ConvertUtils.toCamelCase($tableName) #if($hasExtend)extends $extendClassName #end{
 #foreach($col in $columns)
-    @Schema(name = "$col.comment")
+    @Schema(description = "$col.comment")
     private $col.type $col.name;
     #if($foreach.hasNext)
 

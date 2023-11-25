@@ -1,4 +1,4 @@
 package xyz.blushyes
 
-data class ColumnInfo(val name: String, val type: String, val comment: String) {
+data class ColumnInfo(var name: String, var type: String, var comment: String) {
 }

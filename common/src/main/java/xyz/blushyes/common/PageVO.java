@@ -14,21 +14,21 @@ import java.util.List;
  * 分页结果基类
  */
 @Data
-@Tag(name = "分页结果基类")
+@Schema(description = "分页结果基类")
 public class PageVO<T> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(name = "页码")
+    @Schema(description = "页码")
     private Integer pageNo;
 
-    @Schema(name = "页大小")
+    @Schema(description = "页大小")
     private Integer pageSize;
 
-    @Schema(name = "总数")
+    @Schema(description = "总数")
     private Integer total;
 
-    @Schema(name = "分页明细")
+    @Schema(description = "分页明细")
     private List<T> rows;
 
     public static <T> PageVO<T> emptyPage() {

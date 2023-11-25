@@ -13,10 +13,10 @@ public class LogicPO implements Serializable {
     public static final Long serialVersionUID = 1L;
 
     @TableId(type = IdType.AUTO)
-    @Schema(name = "主键")
+    @Schema(description = "主键")
     private Long id;
 
     @TableLogic
-    @Schema(name = "逻辑删除标记")
+    @Schema(description = "逻辑删除标记")
     private Boolean deleteFlag;
 }
