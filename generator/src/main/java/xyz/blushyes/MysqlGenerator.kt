@@ -128,10 +128,10 @@ class MysqlGenerator : Generator {
             println(mapperWriter)
             println(serviceWriter)
             println(serviceImplWriter)
-            softWrite("pojo", "$basePackage.po", toCamelCase(it.name) + ".java", poWriter.toString())
-            softWrite("core", "$basePackage.mapper", toCamelCase(it.name + "Mapper") + ".java", mapperWriter.toString())
-            softWrite("core", "$basePackage.service", toCamelCase(it.name + "Service") + ".java", serviceWriter.toString())
-            softWrite("core", "$basePackage.service.impl", toCamelCase(it.name + "ServiceImpl") + ".java", serviceImplWriter.toString())
+            safeWrite("pojo", "$basePackage.po", toCamelCase(it.name) + ".java", poWriter.toString())
+            safeWrite("core", "$basePackage.mapper", toCamelCase(it.name + "Mapper") + ".java", mapperWriter.toString())
+            safeWrite("core", "$basePackage.service", toCamelCase(it.name + "Service") + ".java", serviceWriter.toString())
+            safeWrite("core", "$basePackage.service.impl", toCamelCase(it.name + "ServiceImpl") + ".java", serviceImplWriter.toString())
         }
     }
 
