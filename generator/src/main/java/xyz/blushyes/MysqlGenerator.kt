@@ -9,6 +9,8 @@ import xyz.blushyes.common.TimePO
 import java.io.StringWriter
 import java.sql.DriverManager
 
+const val IGNORE_SIGN = "[ignore]"
+
 // TODO 硬编码，后续再重构
 class MysqlGenerator : Generator {
     private val host: String
@@ -49,7 +51,10 @@ class MysqlGenerator : Generator {
 
     private val engine = VelocityEngine().apply {
         setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath")
-        setProperty("classpath.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader")
+        setProperty(
+            "classpath.resource.loader.class",
+            "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader"
+        )
         init()
     }
 
@@ -78,8 +83,12 @@ class MysqlGenerator : Generator {
     override fun execute(basePackage: String) {
         getTableSchemas(url, username, password, db).forEach {
             val context = VelocityContext().apply {
+                if (it.comment.startsWith(IGNORE_SIGN)) {
+                    println("${it.name}表已忽略")
+                    return@forEach
+                }
                 it.columns.forEach { info ->
-                    info.name = toCamelCase(info.name)
+                    info.name = info.name.toCamelCaseWithFirstLowerLetter()
                 }
                 put("ConvertUtils", ConvertUtils())
                 put("tableName", it.name)
@@ -130,8 +139,18 @@ class MysqlGenerator : Generator {
             println(serviceImplWriter)
             safeWrite("pojo", "$basePackage.po", toCamelCase(it.name) + ".java", poWriter.toString())
             safeWrite("core", "$basePackage.mapper", toCamelCase(it.name + "Mapper") + ".java", mapperWriter.toString())
-            safeWrite("core", "$basePackage.service", toCamelCase(it.name + "Service") + ".java", serviceWriter.toString())
-            safeWrite("core", "$basePackage.service.impl", toCamelCase(it.name + "ServiceImpl") + ".java", serviceImplWriter.toString())
+            safeWrite(
+                "core",
+                "$basePackage.service",
+                toCamelCase(it.name + "Service") + ".java",
+                serviceWriter.toString()
+            )
+            safeWrite(
+                "core",
+                "$basePackage.service.impl",
+                toCamelCase(it.name + "ServiceImpl") + ".java",
+                serviceImplWriter.toString()
+            )
         }
     }
 
