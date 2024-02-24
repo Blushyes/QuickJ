@@ -3,9 +3,7 @@ package xyz.blushyes
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
 import org.apache.velocity.runtime.RuntimeConstants
-import xyz.blushyes.common.BasePO
-import xyz.blushyes.common.LogicPO
-import xyz.blushyes.common.TimePO
+import xyz.blushyes.common.*
 import java.io.StringWriter
 import java.sql.DriverManager
 
@@ -75,15 +73,25 @@ class MysqlGenerator : Generator {
         "BOOLEAN" to "boolean"
     )
 
-    private val logicPoFields = LogicPO::class.java.declaredFields.map { toSnakeCase(it.name) }.toSet()
-    private val timePoFields = TimePO::class.java.declaredFields.map { toSnakeCase(it.name) }.toSet()
-    private val basePoFields = BasePO::class.java.declaredFields.map { toSnakeCase(it.name) }.toSet()
+    private val logicPoFields =
+        LogicPO::class.java.declaredFields.filter { it.name != "serialVersionUID" }.map { toSnakeCase(it.name) }.toSet()
+    private val timeWithLogicPoFields =
+        TimeWithLogicPO::class.java.declaredFields.filter { it.name != "serialVersionUID" }.map { toSnakeCase(it.name) }
+            .toSet()
+    private val basePoFields =
+        BasePO::class.java.declaredFields.filter { it.name != "serialVersionUID" }.map { toSnakeCase(it.name) }.toSet()
+    private val simplePoFields =
+        SimplePO::class.java.declaredFields.filter { it.name != "serialVersionUID" }.map { toSnakeCase(it.name) }
+            .toSet()
+    private val timePoFields =
+        TimePO::class.java.declaredFields.filter { it.name != "serialVersionUID" }.map { toSnakeCase(it.name) }
+            .toSet()
 
 
     override fun execute(basePackage: String) {
         getTableSchemas(url, username, password, db).forEach {
             val context = VelocityContext().apply {
-                if (it.comment.startsWith(IGNORE_SIGN)) {
+                if (it.comment.startsWith(IGNORE_SIGN) || IGNORE_TABLE.contains(it.name)) {
                     println("${it.name}表已忽略")
                     return@forEach
                 }
@@ -102,23 +110,33 @@ class MysqlGenerator : Generator {
                     put("columns", it.columns.filter { col -> !fields.contains(toSnakeCase(col.name)) })
                 }
                 val extendWith = fun(fields: Set<String>): Boolean {
-                    return it.columns.map { col -> toSnakeCase(col.name) }.intersect(fields).isNotEmpty()
+                    return it.columns.map { col -> toSnakeCase(col.name) }.containsAll(fields)
                 }
                 if (extendWith(basePoFields)) {
                     put("hasExtend", true)
                     put("extendClass", BasePO::class.java.name)
                     put("extendClassName", BasePO::class.java.simpleName)
-                    resetColumnByFields(basePoFields + timePoFields + logicPoFields)
-                } else if (extendWith(timePoFields)) {
+                    resetColumnByFields(basePoFields + timeWithLogicPoFields + logicPoFields + simplePoFields)
+                } else if (extendWith(timeWithLogicPoFields)) {
                     put("hasExtend", true)
-                    put("extendClass", TimePO::class.java.name)
-                    put("extendClassName", TimePO::class.java.simpleName)
-                    resetColumnByFields(timePoFields + logicPoFields)
+                    put("extendClass", TimeWithLogicPO::class.java.name)
+                    put("extendClassName", TimeWithLogicPO::class.java.simpleName)
+                    resetColumnByFields(timeWithLogicPoFields + logicPoFields + simplePoFields)
                 } else if (extendWith(logicPoFields)) {
                     put("hasExtend", true)
                     put("extendClass", LogicPO::class.java.name)
                     put("extendClassName", LogicPO::class.java.simpleName)
-                    resetColumnByFields(logicPoFields)
+                    resetColumnByFields(logicPoFields + simplePoFields)
+                } else if (extendWith(timePoFields)) {
+                    put("hasExtend", true)
+                    put("extendClass", TimePO::class.java.name)
+                    put("extendClassName", TimePO::class.java.simpleName)
+                    resetColumnByFields(timePoFields + simplePoFields)
+                } else if (extendWith(simplePoFields)) {
+                    put("hasExtend", true)
+                    put("extendClass", SimplePO::class.java.name)
+                    put("extendClassName", SimplePO::class.java.simpleName)
+                    resetColumnByFields(simplePoFields)
                 }
             }
             val poTemplate = engine.getTemplate("templates/po.vm", "utf-8")

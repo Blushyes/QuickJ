@@ -58,7 +58,7 @@ fun write(module: String, packageName: String, fullFileName: String, content: St
 
 fun safeWrite(module: String, packageName: String, fullFileName: String, content: String) {
     val outputPath = transferPath(module, packageName)
-    if (Files.exists(Paths.get(outputPath + File.separator + fullFileName))) {
+    if (Files.exists(Paths.get(outputPath + File.separatorChar + fullFileName))) {
         println("文件已存在")
         return
     }
