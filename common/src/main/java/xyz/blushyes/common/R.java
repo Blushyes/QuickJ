@@ -1,9 +1,9 @@
 package xyz.blushyes.common;
 
+import java.io.Serializable;
+
 import cn.hutool.http.HttpStatus;
 import lombok.Data;
-
-import java.io.Serializable;
 
 /**
  * 统一返回结果的封装类

@@ -1,15 +1,16 @@
 package xyz.blushyes.http;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.stereotype.Component;
+
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import xyz.blushyes.exception.BaseException;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 
 @Component
 @Slf4j

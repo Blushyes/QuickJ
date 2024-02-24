@@ -1,13 +1,12 @@
 package xyz.blushyes.common;
 
-import cn.hutool.http.HttpStatus;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+
+import cn.hutool.http.HttpStatus;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 分页响应结果基类
