@@ -8,4 +8,10 @@ public class Const {
     public static class Path {
         // TODO
     }
+
+    public static class Route {
+        public static final String AUTH = "/auth";
+    }
+
+    public static final String TOKEN_HEADER = "Authorization";
 }

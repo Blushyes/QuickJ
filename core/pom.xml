@@ -81,6 +81,13 @@
             <artifactId>pojo</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
+        <!-- auth -->
+        <dependency>
+            <groupId>xyz.blushyes</groupId>
+            <artifactId>auth</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
