@@ -3,9 +3,13 @@ package xyz.blushyes.http;
 import java.util.Map;
 
 public interface Requests {
+    String get(String url);
+
     String get(String url, Map<String, String> params);
 
     String get(String url, Map<String, String> params, Map<String, String> headers);
+
+    String post(String url);
 
     String post(String url, String body);
 

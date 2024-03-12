@@ -40,6 +40,11 @@ public class HutoolRequests implements Requests {
     }
 
     @Override
+    public String get(String url) {
+        return get(url, null);
+    }
+
+    @Override
     public String get(String url, Map<String, String> params) {
         return get(url, params, null);
     }
@@ -53,6 +58,11 @@ public class HutoolRequests implements Requests {
             throw new BaseException(response.body(), response.getStatus());
         }
         return response.body();
+    }
+
+    @Override
+    public String post(String url) {
+        return post(url, null);
     }
 
     @Override
