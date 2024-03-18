@@ -19,6 +19,7 @@
                 <mysql.username>username</mysql.username>
                 <mysql.password>password</mysql.password>
                 <mysql.db.name>quick-spring</mysql.db.name>
+                <flyway.enable>true</flyway.enable>
             </properties>
         </profile>
         <profile>

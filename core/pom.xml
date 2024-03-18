@@ -88,6 +88,12 @@
             <artifactId>auth</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
+        <!-- flyway -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

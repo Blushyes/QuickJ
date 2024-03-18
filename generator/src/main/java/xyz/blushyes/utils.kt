@@ -37,6 +37,12 @@ fun pathOf(list: List<String?>): String {
     return builder.toString()
 }
 
+/**
+ * <ul>
+ *  <li>例：transferPath("module1", "com.example.module1.service")</li>
+ *  <li>返回：module1/main/java/com/example/module1/service</li>
+ * </ul>
+ */
 fun transferPath(module: String, packageName: String): String {
     return getModuleJavaDirPath(module) + File.separatorChar + packageName.replace('.', File.separatorChar)
 }
