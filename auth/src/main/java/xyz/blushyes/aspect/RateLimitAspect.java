@@ -1,10 +1,11 @@
 package xyz.blushyes.aspect;
 
-import static xyz.blushyes.constant.Const.TOKEN_HEADER;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.http.HttpStatus;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.google.common.util.concurrent.RateLimiter;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,15 +14,10 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import com.google.common.util.concurrent.RateLimiter;
-
-import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.http.HttpStatus;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import xyz.blushyes.ann.RateLimit;
 import xyz.blushyes.exception.BaseException;
+
+import java.util.concurrent.TimeUnit;
 
 @Aspect
 @Component
@@ -31,7 +27,11 @@ public class RateLimitAspect {
 
     private static final String USER_LIMITER_PREFIX = "user:";
     private static final String METHOD_LIMITER_PREFIX = "method:";
-    private final ConcurrentHashMap<String, RateLimiter> limiters = new ConcurrentHashMap<>();
+    private static final Cache<String, RateLimiter> limiters = Caffeine.newBuilder()
+            .initialCapacity(10)
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .maximumSize(100)
+            .build();
 
     @Around("@annotation(xyz.blushyes.ann.RateLimit)")
     public Object rateLimit(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -49,13 +49,11 @@ public class RateLimitAspect {
                 log.error("RateLimit 注解被用在不包含请求的方法上面的时候，开启了 For User 模式");
                 return joinPoint.proceed();
             }
-            HttpServletRequest request = attributes.getRequest();
-            String token = request.getHeader(TOKEN_HEADER);
-            String loginId = (String) StpUtil.getLoginIdByToken(token);
+            long loginId = StpUtil.getLoginIdAsLong();
             log.info("RateLimit for user 模式，用户ID：{}", loginId);
-            rateLimiter = limiters.computeIfAbsent(USER_LIMITER_PREFIX + loginId, k -> RateLimiter.create(permitsPerSecond));
+            rateLimiter = limiters.get(USER_LIMITER_PREFIX + loginId, k -> RateLimiter.create(permitsPerSecond));
         } else {
-            rateLimiter = limiters.computeIfAbsent(METHOD_LIMITER_PREFIX + method, k -> RateLimiter.create(permitsPerSecond));
+            rateLimiter = limiters.get(METHOD_LIMITER_PREFIX + method, k -> RateLimiter.create(permitsPerSecond));
         }
 
         if (!rateLimiter.tryAcquire()) {

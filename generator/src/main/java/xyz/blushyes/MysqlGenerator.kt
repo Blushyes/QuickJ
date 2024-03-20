@@ -78,6 +78,9 @@ class MysqlGenerator : Generator {
     private val timeWithLogicPoFields =
         TimeWithLogicPO::class.java.declaredFields.filter { it.name != "serialVersionUID" }.map { toSnakeCase(it.name) }
             .toSet()
+    private val timeWithoutLogicPoFields =
+        TimeWithLogicPO::class.java.declaredFields.filter { it.name != "serialVersionUID" }.map { toSnakeCase(it.name) }
+            .toSet()
     private val basePoFields =
         BasePO::class.java.declaredFields.filter { it.name != "serialVersionUID" }.map { toSnakeCase(it.name) }.toSet()
     private val simplePoFields =
@@ -117,6 +120,11 @@ class MysqlGenerator : Generator {
                     put("extendClass", BasePO::class.java.name)
                     put("extendClassName", BasePO::class.java.simpleName)
                     resetColumnByFields(basePoFields + timeWithLogicPoFields + logicPoFields + simplePoFields)
+                } else if (extendWith(timeWithoutLogicPoFields)) {
+                    put("hasExtend", true)
+                    put("extendClass", TimeWithoutLogicPO::class.java.name)
+                    put("extendClassName", TimeWithoutLogicPO::class.java.simpleName)
+                    resetColumnByFields(timeWithLogicPoFields + simplePoFields)
                 } else if (extendWith(timeWithLogicPoFields)) {
                     put("hasExtend", true)
                     put("extendClass", TimeWithLogicPO::class.java.name)
