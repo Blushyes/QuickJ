@@ -20,7 +20,7 @@ public class TimeWithLogicPO extends LogicPO {
     private LocalDateTime createdTime;
 
     @Schema(description = "更新时间")
-    @TableField(fill = FieldFill.UPDATE)
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedTime;

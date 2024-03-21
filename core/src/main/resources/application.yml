@@ -30,6 +30,8 @@ spring:
     schemas: @mysql.db.name@
     # 执行迁移时是否自动调用验证   当你的 版本不符合逻辑 比如 你先执行了 DML 而没有 对应的DDL 会抛出异常
     validate-on-migrate: true
+  profiles:
+    active: @profile@
 
 springdoc:
   swagger-ui:
@@ -43,8 +45,6 @@ springdoc:
       paths-to-match: '/**'
 
 mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations:
     - classpath:mapper/*.xml
     - classpath*:com/**/mapper/*.xml

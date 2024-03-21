@@ -1,11 +1,7 @@
 package xyz.blushyes.aspect;
 
-import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.http.HttpStatus;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.google.common.util.concurrent.RateLimiter;
-import lombok.extern.slf4j.Slf4j;
+import java.util.concurrent.TimeUnit;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,10 +10,16 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.google.common.util.concurrent.RateLimiter;
+
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import xyz.blushyes.ann.RateLimit;
 import xyz.blushyes.exception.BaseException;
-
-import java.util.concurrent.TimeUnit;
 
 @Aspect
 @Component
@@ -50,13 +52,13 @@ public class RateLimitAspect {
                 return joinPoint.proceed();
             }
             long loginId = StpUtil.getLoginIdAsLong();
-            log.info("RateLimit for user 模式，用户ID：{}", loginId);
             rateLimiter = limiters.get(USER_LIMITER_PREFIX + loginId, k -> RateLimiter.create(permitsPerSecond));
         } else {
             rateLimiter = limiters.get(METHOD_LIMITER_PREFIX + method, k -> RateLimiter.create(permitsPerSecond));
         }
 
         if (!rateLimiter.tryAcquire()) {
+            log.warn("疑似异常访问，用户ID：{}", StpUtil.getLoginIdAsLong());
             throw new BaseException("服务繁忙请稍后重试", HttpStatus.HTTP_TOO_MANY_REQUESTS);
         }
 

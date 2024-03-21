@@ -20,6 +20,7 @@
                 <mysql.password>password</mysql.password>
                 <mysql.db.name>quick-spring</mysql.db.name>
                 <flyway.enable>true</flyway.enable>
+                <profile>dev</profile>
             </properties>
         </profile>
         <profile>
